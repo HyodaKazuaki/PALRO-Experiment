@@ -7,11 +7,10 @@
 //////////////////////////////////////////////////////////
 #include <stdio.h>
 #ifdef __MACH__
-#include <opencv2/highgui.hpp>					// CV_LOAD_IMAGE_ANYDEPTH, CV_LOAD_IMAGE_ANY_COLOR, cvLoadImage, cvSaveImage, CV_WINDOW_AUTOSIZE, cvNamedWindow, cvShowImage, cvWaitKey, cvDestroyWindowの定義
+#include <opencv/highgui.h>					// CV_LOAD_IMAGE_ANYDEPTH, CV_LOAD_IMAGE_ANY_COLOR, cvLoadImage, cvSaveImage, CV_WINDOW_AUTOSIZE, cvNamedWindow, cvShowImage, cvWaitKey, cvDestroyWindowの定義
 #elif
 #include <highgui.h>					// CV_LOAD_IMAGE_ANYDEPTH, CV_LOAD_IMAGE_ANY_COLOR, cvLoadImage, cvSaveImage, CV_WINDOW_AUTOSIZE, cvNamedWindow, cvShowImage, cvWaitKey, cvDestroyWindowの定義
 #endif
-
 ///////////////////////////////////////////////////////////////////////////
 // HSV表色系からHSV表色系への変換
 // 引数：	HSV(H:0~360, S,V:0~1)の入ったdouble配列
