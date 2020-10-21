@@ -19,7 +19,7 @@ void HSVtoRGB( double pre[3], double post[3] )
 	double h = pre[0];
 	double s = pre[1];
 	double v = pre[2];
-	int Hi = h / 60 % 6;
+	int Hi = (int)(h / 60) % 6;
 	double f = h / 60.0 - Hi;
 	double p = v * (1.0 - s);
 	double q = v * (1 - f * s);
