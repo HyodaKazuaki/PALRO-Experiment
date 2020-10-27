@@ -94,6 +94,8 @@ void RGBtoHSV( double pre[3], double post[3] )
 		h = 60.0 * ((b - r) / (max - min)) + 120.0;
 	else
 		h = 60.0 * ((r - g) / (max - min)) + 240.0;
+	if (h < 0)
+		h += 360.0;
 	s = (max - min) / max;
 	v = max;
 	post[0] = h;
@@ -187,18 +189,16 @@ void constHSV(IplImage* img, double h, double s, double v) {
 			if(h < 0){
 				hsv[1] = s;
 				hsv[2] = v;
-				HSVtoRGB(hsv, rgb);
 			}
 			else if(s < 0){
 				hsv[0] = h;
 				hsv[2] = v;
-				HSVtoRGB(hsv, rgb);
 			}
 			else{
 				hsv[0] = h;
 				hsv[1] = s;
-				HSVtoRGB(hsv, rgb);
 			}
+			HSVtoRGB(hsv, rgb);
 			img->imageData[pos + 0] = cvRound(rgb[2] * 255.0);
 			img->imageData[pos + 1] = cvRound(rgb[1] * 255.0);
 			img->imageData[pos + 2] = cvRound(rgb[0] * 255.0);

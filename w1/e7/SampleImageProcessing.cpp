@@ -94,6 +94,8 @@ void RGBtoHSV( double pre[3], double post[3] )
 		h = 60.0 * ((b - r) / (max - min)) + 120.0;
 	else
 		h = 60.0 * ((r - g) / (max - min)) + 240.0;
+	if (h < 0)
+		h += 360.0;
 	s = (max - min) / max;
 	v = max;
 	post[0] = h;
@@ -187,18 +189,43 @@ void constHSV(IplImage* img, double h, double s, double v) {
 			if(h < 0){
 				hsv[1] = s;
 				hsv[2] = v;
-				HSVtoRGB(hsv, rgb);
 			}
 			else if(s < 0){
 				hsv[0] = h;
 				hsv[2] = v;
-				HSVtoRGB(hsv, rgb);
 			}
 			else{
 				hsv[0] = h;
 				hsv[1] = s;
-				HSVtoRGB(hsv, rgb);
 			}
+			HSVtoRGB(hsv, rgb);
+			img->imageData[pos + 0] = cvRound(rgb[2] * 255.0);
+			img->imageData[pos + 1] = cvRound(rgb[1] * 255.0);
+			img->imageData[pos + 2] = cvRound(rgb[0] * 255.0);
+		}
+	}
+}
+
+void detectObject(IplImage* img, double *th_h, double *th_s, double *th_v) {
+	int x, y;
+	int pos;
+	double hsv[3], rgb[3];
+	for(y = 0; y < img->height; y++){
+		for(x = 0; x < img->width; x++){
+			pos = img->widthStep * y + x * 3;
+			rgb[0] = (uchar)img->imageData[pos + 2 ] / 255.0;        // R読み込み
+			rgb[1] = (uchar)img->imageData[pos + 1 ] / 255.0;        // G読み込み
+			rgb[2] = (uchar)img->imageData[pos + 0 ] / 255.0;        // B読み込み
+			RGBtoHSV( rgb, hsv );
+			if(
+				th_h[0] < hsv[0] and hsv[0] < th_h[1] and
+				th_s[0] < hsv[1] and hsv[1] < th_s[1] and
+				th_v[0] < hsv[2] and hsv[2] < th_v[1]
+			){
+				hsv[1] = 0.0;
+				hsv[2] = 1.0;
+			}
+			HSVtoRGB(hsv, rgb);
 			img->imageData[pos + 0] = cvRound(rgb[2] * 255.0);
 			img->imageData[pos + 1] = cvRound(rgb[1] * 255.0);
 			img->imageData[pos + 2] = cvRound(rgb[0] * 255.0);
@@ -230,7 +257,12 @@ int main( void )
 	cvWaitKey( 0 );
 	
 	printf( "%d\n", HueCount( post_img, 330.0, 360.0, 0.8 ) );
-	constHSV(post_img, -1.0, 1.0, 1.0);
+
+	double th_h[2] = {280.0, 351.0};
+	double th_s[2] = {0.55, 1.0};
+	double th_v[2] = {0.0, 1.0};
+	detectObject(post_img, th_h, th_s, th_v);
+
 	cvNamedWindow( "After_Image", CV_WINDOW_AUTOSIZE );
 	cvShowImage( "After_Image", post_img );
 	cvWaitKey( 0 );

@@ -173,6 +173,35 @@ void ShowHSVspace()
 	cvReleaseImage( &test_img );
 }
 
+void constRGB(IplImage* img, double r, double g, double b) {
+	int x, y;
+	int pos;
+	double rgb[3];
+	for(y = 0; y < img->height; y++){
+		for(x = 0; x < img->width; x++){
+			pos = img->widthStep * y + x * 3;
+			rgb[0] = (uchar)img->imageData[pos + 2 ] / 255.0;        // R読み込み
+			rgb[1] = (uchar)img->imageData[pos + 1 ] / 255.0;        // G読み込み
+			rgb[2] = (uchar)img->imageData[pos + 0 ] / 255.0;        // B読み込み
+			if(r < 0){
+				rgb[1] = g;
+				rgb[2] = b;
+			}
+			else if(g < 0){
+				rgb[0] = r;
+				rgb[2] = b;
+			}
+			else{
+				rgb[0] = r;
+				rgb[1] = g;
+			}
+			img->imageData[pos + 0] = cvRound(rgb[2] * 255.0);
+			img->imageData[pos + 1] = cvRound(rgb[1] * 255.0);
+			img->imageData[pos + 2] = cvRound(rgb[0] * 255.0);
+		}
+	}
+}
+
 void constHSV(IplImage* img, double h, double s, double v) {
 	int x, y;
 	int pos;
@@ -187,18 +216,16 @@ void constHSV(IplImage* img, double h, double s, double v) {
 			if(h < 0){
 				hsv[1] = s;
 				hsv[2] = v;
-				HSVtoRGB(hsv, rgb);
 			}
 			else if(s < 0){
 				hsv[0] = h;
 				hsv[2] = v;
-				HSVtoRGB(hsv, rgb);
 			}
 			else{
 				hsv[0] = h;
 				hsv[1] = s;
-				HSVtoRGB(hsv, rgb);
 			}
+			HSVtoRGB(hsv, rgb);
 			img->imageData[pos + 0] = cvRound(rgb[2] * 255.0);
 			img->imageData[pos + 1] = cvRound(rgb[1] * 255.0);
 			img->imageData[pos + 2] = cvRound(rgb[0] * 255.0);
@@ -230,7 +257,7 @@ int main( void )
 	cvWaitKey( 0 );
 	
 	printf( "%d\n", HueCount( post_img, 330.0, 360.0, 0.8 ) );
-	constHSV(post_img, -1.0, 1.0, 1.0);
+	constRGB(post_img, -1.0, 0.0, 0.0);
 	cvNamedWindow( "After_Image", CV_WINDOW_AUTOSIZE );
 	cvShowImage( "After_Image", post_img );
 	cvWaitKey( 0 );
