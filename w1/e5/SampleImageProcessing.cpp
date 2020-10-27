@@ -231,7 +231,7 @@ int main( void )
 	cvWaitKey( 0 );
 	
 	printf( "%d\n", HueCount( post_img, 330.0, 360.0, 0.8 ) );
-	constHSV(post_img, 0.0, 1.0, -1.0);
+	constHSV(post_img, 0.0, -1.0, 1.0);
 	cvNamedWindow( "After_Image", CV_WINDOW_AUTOSIZE );
 	cvShowImage( "After_Image", post_img );
 	cvWaitKey( 0 );
