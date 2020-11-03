@@ -71,7 +71,7 @@ int accept_and_echo()
 		fputs("Failed to read file from network.\n", stderr);
 		return 1;
 		}
-		if(write(bfd, buf, BUFSIZE) < 0){
+		if(write(bfd, buf, ret) < 0){
 			fputs("Failed to write file.\n", stderr);
 			return 1;
 		}
