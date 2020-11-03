@@ -86,7 +86,7 @@ int main( void )
 			fputs("Failed to read file.\n", stderr);
 			return -1;
 		}
-		if(write(sock, buf, BUFF_SIZE) < 0){
+		if(write(sock, buf, ret) < 0){
 			fputs("Failed to send file.\n", stderr);
 			return -1;
 		}
