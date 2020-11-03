@@ -95,6 +95,7 @@ int main( void )
 			fputs("Failed to send file.\n", stderr);
 			return -1;
 		}
+		bmpSize += ret;
 	}while(ret != 0);
 	printf("Finished sending file.\n");
 	close( bfd );									// ビットマップファイルのクローズ
