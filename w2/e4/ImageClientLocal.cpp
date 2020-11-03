@@ -8,6 +8,7 @@
 
 #include <netdb.h>						// gethostbynameの定義
 #include <stdio.h>
+#include <string.h>
 #include <fcntl.h>						// O_RDONLY　を使用するため
 #include <unistd.h>						// read, close　など
 #include <netdb.h>						// gethostbynameの定義
