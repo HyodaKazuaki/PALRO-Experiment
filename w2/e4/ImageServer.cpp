@@ -76,9 +76,10 @@ int accept_and_echo()
 			return 1;
 		}
 		commlen += ret;
-		printf(".");
+		printf("\rTotal: %ld B(%d B Recieved)", commlen, ret);
 	}while(ret != 0);
 	fsync(bfd);
+	printf("\n");
 	
 	close( fd );
 	close( bfd );

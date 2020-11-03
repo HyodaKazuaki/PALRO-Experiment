@@ -95,8 +95,6 @@ int main( void )
 	printf("Finished sending file.\n");
 	close( bfd );									// ビットマップファイルのクローズ
 
-	strcpy( buf, "message end" );
-	write( sock, buf, strlen( buf ) + 1 );
 	CloseNetwork( sock );
 
 	printf( "%ld KB\n", bmpSize * BUFF_SIZE / 1024);
