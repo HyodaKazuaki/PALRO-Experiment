@@ -1,5 +1,5 @@
 
-MOD_NAME = ImageClientLocal
+MOD_NAME = ImageServer
 MOD_SRC  = $(MOD_NAME).cpp
 MOD_OBJ  = $(MOD_SRC:.cpp=.o)
 
