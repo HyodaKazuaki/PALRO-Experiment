@@ -11,7 +11,22 @@
 
 class CHelloWorld : public PAPI::CTransientApplication
 {
-	
+private:
+	long MoveNeck(int yaw, int pitch, int msec)
+	{
+		if(yaw < -60 || yaw > 60 || pitch < -45 || pitch > 17 || msec < 10)
+			return -1;
+		PAPI::CCommParams cParam;
+
+		cParam.Set(PAPI::PARAM_NECK_YAW, yaw);
+		cParam.Set(PAPI::PARAM_NECK_PITCH, pitch);
+		cParam.Set(PAPI::PARAM_NECK_EXEC_TIME, msec);
+		long lReqno = cComm.Send(PAPI::COMTYP_MOVE_NECK_FREELY, NULL, cParam);
+		long lResult = evDispatcher.Sync(lReqno);
+		if(lResult != 0)
+			SAPIE_LOG_ERR(0, "MoveNeckError: %ld", lResult);
+	}
+	return lResult;
 public:
 ///////////////////////////////////////////////////////////////////////////
 // 発話関数
@@ -36,6 +51,8 @@ public:
 	void OnProcessMain(Sapie::CControllerBase* pSender)
 	{
 		mySpeak( "こんにちは" );
+		MoveNeck(60, -45, 45);
+		MoveNeck(-60, 17, 90);
 	}
 };
 

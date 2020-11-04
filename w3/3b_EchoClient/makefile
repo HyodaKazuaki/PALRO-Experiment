@@ -1,22 +1,14 @@
 
-MOD_NAME = HelloWorld
+MOD_NAME = EchoClient
 MOD_SRC  = $(MOD_NAME).cpp
 MOD_OBJ  = $(MOD_SRC:.cpp=.o)
-WORKDIR = $(shell cd ../lib && pwd)
 
-ifeq ($(shell uname), Linux)
-INC_PATH = \
-	-I$(WORKDIR)/include/sapie \
-	-I$(WORKDIR)/include/papi
-LIB_FILE = $(WORKDIR)/lib/libsapie.so.3.0 $(WORKDIR)/lib/libpapi.so.3.0 -lcxcore -lcv -lhighgui -lcvaux -lml 
-else
 INC_PATH = \
 	-I/usr/local/include/sapie \
 	-I/usr/local/include/papi
-LIB_FILE = /usr/local/lib/libsapie.so.3.0 /usr/local/lib/libpapi.so.3.0 -lcxcore -lcv -lhighgui -lcvaux -lml 
-endif
 CFLAGS = -Wall -c -Wno-deprecated $(INC_PATH)
 LFLAGS = -Wl
+LIB_FILE = /usr/local/lib/libsapie.so.3.0 /usr/local/lib/libpapi.so.3.0 -lcxcore -lcv -lhighgui -lcvaux -lml 
 
 all: release
 
