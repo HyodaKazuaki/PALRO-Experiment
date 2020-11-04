@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<palro_application name="HelloWorld" version="1.0.0" releasedate="2018/10/15" type="PAPPS" mode="transient" appkind="other" language="ja">
+  <title>Hello World</title>
+  <titlespk>ハローワールド</titlespk>
+  <description />
+</palro_application>
