@@ -113,7 +113,7 @@ public:
 		
 		// この部分を作成
 		char *buf = "こんにちは";
-		write(sock, buf, typeof(buf) * sizeof(buf));
+		write(sock, buf, sizeof(char *) * sizeof(buf));
 		mySpeak(buf);
 		
 		CloseNetwork( sock );
