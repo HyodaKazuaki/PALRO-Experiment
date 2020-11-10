@@ -11,11 +11,12 @@
 #include "CameraController.h"			// PALROのカメラコントロール関係
 #include <opencv/highgui.h>				// cvSaveImageの定義
 #include <string>
+#include <netdb>
 
 #define BMP_FILE_NAME "tmp.bmp"			// 一時保存ファイル名
 #define BUFF_SIZE 1024					// バッファサイズ
 #define PORT 54321						// ポート番号
-#define HOST_NAME "localhost"			// サーバ名
+#define HOST_NAME "192.168.11.57"			// サーバ名
 
 class CTakePhoto : public PAPI::CTransientApplication
 {
