@@ -10,7 +10,9 @@
 #include "LogCtrl.h"					// PALROのログ関係
 #include "CameraController.h"			// PALROのカメラコントロール関係
 #include <opencv/highgui.h>				// cvSaveImageの定義
-#include <string>
+#include <fcntl.h>						// O_RDONLY　を使用するため
+#include <unistd.h>						// read, close　など
+#include <netdb.h>						// gethostbynameの定義
 #include <netdb.h>
 
 #define BMP_FILE_NAME "tmp.bmp"			// 一時保存ファイル名
@@ -130,7 +132,8 @@ public:
 
 		int bfd = open( BMP_FILE_NAME, O_RDONLY );		// ビットマップファイルをバイナリ形式でオープン
 		if( bfd < 0 ){
-			return 1;
+			mySpeak("写真を開くことができませんでした");
+			return;
 		}
 
 		char buf[BUFF_SIZE];							// データ転送用配列
@@ -141,11 +144,11 @@ public:
 			ret = read(bfd, buf, BUFF_SIZE);
 			if(ret < 0){
 				mySpeak("写真を読み込めませんでした");
-				return -1;
+				return;
 			}
 			if(write(sock, buf, ret) < 0){
 				mySpeak("写真を送信できませんでした");
-				return -1;
+				return;
 			}
 			bmpSize += ret;
 		}while(ret != 0);
