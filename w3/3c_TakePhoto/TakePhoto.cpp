@@ -120,8 +120,8 @@ public:
 		mySpeak("写真を撮ったので保存します");
 		cvSaveImage( BMP_FILE_NAME, img );					// 撮った写真をBMPファイルとして保存
 		cvReleaseImage( &img );
-		std::string sending = "今から" + HOST_NAME + "に写真を送ります";
-		mySpeak(sending.c_str())
+		// std::string sending = "今から" + HOST_NAME + "に写真を送ります";
+		mySpeak("今から192.168.11.57に写真を送ります");
 
 		int ret = 0;
 		// ネットワーク接続
