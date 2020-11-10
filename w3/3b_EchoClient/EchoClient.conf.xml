@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<palro_application name="EchoClient" version="1.0.0" releasedate="2018/10/15" type="PAPPS" mode="transient" appkind="other" language="ja">
+  <title>Echo Client</title>
+  <titlespk>エコー</titlespk>
+  <description />
+</palro_application>
