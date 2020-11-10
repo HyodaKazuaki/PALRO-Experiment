@@ -114,7 +114,7 @@ public:
 		
 		// この部分を作成
 		char *buf = "Hello from PALRO";
-		write(sock, buf, sizeof(buf));
+		write(sock, buf, strlen(buf) + 1);
 		read(sock, recv, BUFF_SIZE);
 		mySpeak(recv);
 		
