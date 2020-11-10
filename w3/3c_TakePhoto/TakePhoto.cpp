@@ -10,14 +10,60 @@
 #include "LogCtrl.h"					// PALROのログ関係
 #include "CameraController.h"			// PALROのカメラコントロール関係
 #include <opencv/highgui.h>				// cvSaveImageの定義
+#include <string>
 
 #define BMP_FILE_NAME "tmp.bmp"			// 一時保存ファイル名
+#define BUFF_SIZE 1024					// バッファサイズ
+#define PORT 54321						// ポート番号
+#define HOST_NAME "localhost"			// サーバ名
 
 class CTakePhoto : public PAPI::CTransientApplication
 {
 private:
 	const Sapie::CEventInfo *pEventInfo;
+///////////////////////////////////////////////////////////////////////////
+// ネットワーク開始処理
+// 引数：なし
+// 返り値：ソケットのディスクリプター
+///////////////////////////////////////////////////////////////////////////
+int OpenNetwork( )
+{
+	int sock;									// ここから一般的なソケット処理
+	if(( sock = socket( AF_INET, SOCK_STREAM, 0 )) < 0 ){
+		perror( "sock" );
+		return -1;
+	}
 
+	struct hostent *hp = gethostbyname( HOST_NAME );
+	if( hp == NULL ){
+		perror( "socket" );
+		return -1;
+	}
+
+	struct sockaddr_in addr;
+	memset( (void*)&addr, 0, sizeof( addr) );
+	memcpy( &addr.sin_addr, hp->h_addr, hp->h_length );
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(PORT);
+
+	if( connect( sock, (struct sockaddr *)&addr, sizeof( addr ) ) < 0 ){
+		perror( "connect" );
+		return -1;
+	}
+	return sock;
+}
+
+///////////////////////////////////////////////////////////////////////////
+// ネットワーク終了処理
+// 引数：ソケットディスクリプター
+// 返り値：正常終了0、異常終了-1
+///////////////////////////////////////////////////////////////////////////
+int CloseNetwork( int sock )
+{
+	close( sock );
+
+	return 0;
+}
 public:
 ///////////////////////////////////////////////////////////////////////////
 // 発話関数
@@ -70,8 +116,43 @@ public:
 		mySpeak( "写真を撮ります" );
 		IplImage* img = NULL;
 		TakePic( img );
+		mySpeak("写真を撮ったので保存します");
 		cvSaveImage( BMP_FILE_NAME, img );					// 撮った写真をBMPファイルとして保存
 		cvReleaseImage( &img );
+		std::string sending = "今から" + HOST_NAME + "に写真を送ります";
+		mySpeak(sending.c_str())
+
+		int ret = 0;
+		// ネットワーク接続
+		int sock = OpenNetwork();						// ソケットのハンドル取得
+		mySpeak("ネットワークに接続しました");
+
+		int bfd = open( BMP_FILE_NAME, O_RDONLY );		// ビットマップファイルをバイナリ形式でオープン
+		if( bfd < 0 ){
+			return 1;
+		}
+
+		char buf[BUFF_SIZE];							// データ転送用配列
+		long bmpSize = 0;
+
+		/* ここに送信処理を挿入 */
+		do{
+			ret = read(bfd, buf, BUFF_SIZE);
+			if(ret < 0){
+				mySpeak("写真を読み込めませんでした");
+				return -1;
+			}
+			if(write(sock, buf, ret) < 0){
+				mySpeak("写真を送信できませんでした");
+				return -1;
+			}
+			bmpSize += ret;
+		}while(ret != 0);
+		mySpeak("写真を送信しました");
+		close( bfd );									// ビットマップファイルのクローズ
+
+		CloseNetwork( sock );
+		mySpeak("ネットワークとの接続を解除しました");
 	}
 };
 
