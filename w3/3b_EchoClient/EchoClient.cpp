@@ -14,7 +14,7 @@
 #define PORT 54321						// ポート番号
 #define BUFF_SIZE 1024					// バッファサイズ
 
-#define HOST_NAME "192.168.100.101"		// サーバのIPアドレス
+#define HOST_NAME "192.168.11.2"		// サーバのIPアドレス
 
 class CEchoClient : public PAPI::CTransientApplication
 {
@@ -113,7 +113,7 @@ public:
 		
 		// この部分を作成
 		char *buf = "こんにちは";
-		write(sock, buf, sizeof(char *) * sizeof(buf));
+		write(sock, buf, sizeof(buf));
 		mySpeak(buf);
 		
 		CloseNetwork( sock );
