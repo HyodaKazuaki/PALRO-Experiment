@@ -11,7 +11,7 @@
 #include "CameraController.h"			// PALROのカメラコントロール関係
 #include <opencv/highgui.h>				// cvSaveImageの定義
 #include <string>
-#include <netdb>
+#include <netdb.h>
 
 #define BMP_FILE_NAME "tmp.bmp"			// 一時保存ファイル名
 #define BUFF_SIZE 1024					// バッファサイズ
