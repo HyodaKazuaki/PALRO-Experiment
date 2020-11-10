@@ -14,7 +14,7 @@
 #define PORT 54321						// ポート番号
 #define BUFF_SIZE 1024					// バッファサイズ
 
-#define HOST_NAME "192.168.11.2"		// サーバのIPアドレス
+#define HOST_NAME "192.168.11.57"		// サーバのIPアドレス
 
 class CEchoClient : public PAPI::CTransientApplication
 {
@@ -107,14 +107,16 @@ public:
 ///////////////////////////////////////////////////////////////////////////
 	void OnProcessMain(Sapie::CControllerBase* pSender)
 	{
+		char recv[BUFF_SIZE];
 		mySpeak( "ネットワークに接続します" );
 		// ネットワーク接続
 		int sock = OpenNetwork();
 		
 		// この部分を作成
-		char *buf = "こんにちは";
+		char *buf = "Hello from PALRO";
 		write(sock, buf, sizeof(buf));
-		mySpeak(buf);
+		read(sock, recv, BUFF_SIZE);
+		mySpeak(recv);
 		
 		CloseNetwork( sock );
 		
