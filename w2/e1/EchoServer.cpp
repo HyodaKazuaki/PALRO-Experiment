@@ -53,7 +53,7 @@ void accept_and_echo()
 	/* ここに受信処理を記述 */
 	while(1){
 		read(fd, buf, BUFSIZE);
-		if (buf[0] == '\n') break;
+		if (buf[0] == '\0') break;
 		printf("client: %s", buf);
 		write(fd, buf, strlen(buf) + 1);
 	}
