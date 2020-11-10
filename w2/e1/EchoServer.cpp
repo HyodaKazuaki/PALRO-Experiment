@@ -55,7 +55,7 @@ void accept_and_echo()
 		read(fd, buf, BUFSIZE);
 		if (buf[0] == '\n') break;
 		printf("client: %s", buf);
-		write(fd, buf, BUFSIZE);
+		write(fd, buf, strlen(buf) + 1);
 	}
 
 	close( fd );
