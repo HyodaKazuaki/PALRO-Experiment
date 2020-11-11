@@ -25,8 +25,8 @@ private:
 		long lResult = evDispatcher.Sync(lReqno);
 		if(lResult != 0)
 			SAPIE_LOG_ERR(0, "MoveNeckError: %ld", lResult);
+		return lResult;
 	}
-	return lResult;
 public:
 ///////////////////////////////////////////////////////////////////////////
 // 発話関数
