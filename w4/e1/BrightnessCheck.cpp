@@ -13,7 +13,6 @@
 #include <fcntl.h>						// O_RDONLY　を使用するため
 #include <unistd.h>						// read, close　など
 #include <netdb.h>						// gethostbynameの定義
-#include <netdb.h>
 
 #define BMP_FILE_NAME "tmp.bmp"			// 一時保存ファイル名
 #define BUFF_SIZE 1024					// バッファサイズ
@@ -171,7 +170,14 @@ double CalcAveBrightness(IplImage* img) {
 		double average;
 		char buf[BUFF_SIZE], recv[BUFF_SIZE];
 		// ネットワーク接続
+		char str[300];
+		sprintf(str, "%sに接続します", HOST_NAME);
+		mySpeak(str);
 		int sock = OpenNetwork();						// ソケットのハンドル取得
+		if(sock < 0){
+			mySpeak("ネットワークの接続に失敗しました");
+			return;
+		}
 		mySpeak("ネットワークに接続しました");
 		mySpeak( "今からしばらく写真を撮ります" );
 		IplImage* img = NULL;
