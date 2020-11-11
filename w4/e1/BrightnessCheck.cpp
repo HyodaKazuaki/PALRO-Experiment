@@ -184,8 +184,8 @@ double CalcAveBrightness(IplImage* img) {
 		while(1){
 			TakePic( img );
 			average = CalcAveBrightness(img);
-			sprintf(buf, "%lf", average);
-			write(sock, buf, strlen(buf) + 1);
+			sprintf(buf, "%.3lf\n", average);
+			write(sock, buf, sizeof(buf));
 			read(sock, recv, BUFF_SIZE);
 			if(strcmp(buf, recv) != 0) {
 				mySpeak("サーバとの通信がおかしいようです");
