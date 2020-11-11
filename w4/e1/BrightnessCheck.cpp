@@ -168,8 +168,8 @@ double CalcAveBrightness(IplImage* img) {
 ///////////////////////////////////////////////////////////////////////////
 	void OnProcessMain(Sapie::CControllerBase* pSender)
 	{
-		double average, recv_ave;
-		int ret = 0;
+		double average;
+		char buf[BUFF_SIZE], recv[BUFF_SIZE];
 		// ネットワーク接続
 		int sock = OpenNetwork();						// ソケットのハンドル取得
 		mySpeak("ネットワークに接続しました");
@@ -178,9 +178,10 @@ double CalcAveBrightness(IplImage* img) {
 		while(1){
 			TakePic( img );
 			average = CalcAveBrightness(img);
-			write(sock, average, sizeof(average));
-			read(sock, recv_ave, sizeof(ave_check));
-			if(average != recv_ave) {
+			sprintf(buf, "%lf", average);
+			write(sock, buf, strlen(buf) + 1);
+			read(sock, recv, BUFF_SIZE);
+			if(strcmp(buf, recv) != 0) {
 				mySpeak("サーバとの通信がおかしいようです");
 				break;
 			}
