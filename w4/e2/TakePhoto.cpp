@@ -13,6 +13,7 @@
 #include <fcntl.h>						// O_RDONLY　を使用するため
 #include <unistd.h>						// read, close　など
 #include <netdb.h>						// gethostbynameの定義
+#include <netdb.h>
 
 #define BMP_FILE_NAME "tmp.bmp"			// 一時保存ファイル名
 #define BUFF_SIZE 1024					// バッファサイズ
@@ -23,40 +24,6 @@ class CTakePhoto : public PAPI::CTransientApplication
 {
 private:
 	const Sapie::CEventInfo *pEventInfo;
-///////////////////////////////////////////////////////////////////////////
-// HSV表色系からHSV表色系への変換
-// 引数：	RGB(R, G, B:0~1)を格納するdouble配列
-//			HSV(H:0~360, S,V:0~1)の入ったdouble配列
-// 返り値：なし
-///////////////////////////////////////////////////////////////////////////
-void RGBtoHSV( double pre[3], double post[3] )
-{
-	double h, s, v;
-	double r = pre[0];
-	double g = pre[1];
-	double b = pre[2];
-
-	double max = r;
-	double min = r;
-	int i;
-	for (i = 0; i < 3; i++){
-		if(max < pre[i])
-			max = pre[i];
-		if(min > pre[i])
-			min = pre[i];
-	}
-	if(max == r)
-		h = 60.0 * ((g - b) / (max - min));
-	else if(max == g)
-		h = 60.0 * ((b - r) / (max - min)) + 120.0;
-	else
-		h = 60.0 * ((r - g) / (max - min)) + 240.0;
-	s = (max - min) / max;
-	v = max;
-	post[0] = h;
-	post[1] = s;
-	post[2] = v;
-}
 ///////////////////////////////////////////////////////////////////////////
 // ネットワーク開始処理
 // 引数：なし
@@ -88,6 +55,50 @@ int OpenNetwork( )
 	}
 	return sock;
 }
+
+	void detectObject(IplImage* img, double *th_h, double *th_s, double *th_v) {
+		int x, y;
+		int pos;
+		double hsv[3], rgb[3];
+		for(y = 0; y < img->height; y++){
+			for(x = 0; x < img->width; x++){
+				pos = img->widthStep * y + x * 3;
+				rgb[0] = (uchar)img->imageData[pos + 2 ] / 255.0;        // R読み込み
+				rgb[1] = (uchar)img->imageData[pos + 1 ] / 255.0;        // G読み込み
+				rgb[2] = (uchar)img->imageData[pos + 0 ] / 255.0;        // B読み込み
+				RGBtoHSV( rgb, hsv );
+				if(
+					th_h[0] < hsv[0] and hsv[0] < th_h[1] and
+					th_s[0] < hsv[1] and hsv[1] < th_s[1] and
+					th_v[0] < hsv[2] and hsv[2] < th_v[1]
+				){
+					hsv[1] = 0.0;
+					hsv[2] = 1.0;
+				}
+				HSVtoRGB(hsv, rgb);
+				img->imageData[pos + 0] = cvRound(rgb[2] * 255.0);
+				img->imageData[pos + 1] = cvRound(rgb[1] * 255.0);
+				img->imageData[pos + 2] = cvRound(rgb[0] * 255.0);
+			}
+		}
+	}
+	double CalcAveBrightness(IplImage* img) {
+		int x, y, pos;
+		double hsv[3], rgb[3];
+		double ave = 0.0;
+		for(y = 0; y < img->height; y++){
+			for(x = 0; x < img->width; x++){
+				pos = img->widthStep * y + x * 3;
+				rgb[0] = (uchar)img->imageData[pos + 2] / 255.0;
+				rgb[1] = (uchar)img->imageData[pos + 1] / 255.0;
+				rgb[2] = (uchar)img->imageData[pos + 0] / 255.0;
+				RGBtoHSV(rgb, hsv);
+				ave += hsv[2];
+			}
+		}
+		ave /= img->height * img->width;
+		return ave;
+	}
 
 ///////////////////////////////////////////////////////////////////////////
 // ネットワーク終了処理
@@ -144,22 +155,31 @@ public:
 		evDispatcher.Release( pEventInfo );
 	}
 
-	double CalcAveBrightness(IplImage* img) {
-		int x, y, pos;
-		double hsv[3], rgb[3];
-		double ave = 0.0;
-		for(y = 0; y < img->height; y++){
-			for(x = 0; x < img->width; x++){
-				pos = img->widthStep * y + x * 3;
-				rgb[0] = (uchar)img->imageData[pos + 2] / 255.0;
-				rgb[1] = (uchar)img->imageData[pos + 1] / 255.0;
-				rgb[2] = (uchar)img->imageData[pos + 0] / 255.0;
-				RGBtoHSV(rgb, hsv);
-				ave += hsv[2];
-			}
+	int SendFile(int sock, char* filename, int buff_size){
+		int ret = 0;
+		char buf[buff_size];							// データ転送用配列
+
+		int bfd = open( filename, O_RDONLY );		// ビットマップファイルをバイナリ形式でオープン
+		if( bfd < 0 ){
+			mySpeak("写真を開くことができませんでした");
+			return -1;
 		}
-		ave /= img->height * img->width;
-		return ave;
+
+		/* ここに送信処理を挿入 */
+		do{
+			ret = read(bfd, buf, buff_size);
+			if(ret < 0){
+				mySpeak("写真を読み込めませんでした");
+				return -1;
+			}
+			if(write(sock, buf, ret) < 0){
+				mySpeak("写真を送信できませんでした");
+				return -1;
+			}
+			bmpSize += ret;
+		}while(ret != 0);
+		close( bfd );									// ビットマップファイルのクローズ
+		return 0;
 	}
 
 ///////////////////////////////////////////////////////////////////////////
@@ -169,36 +189,35 @@ public:
 	{
 		double average;
 		char buf[BUFF_SIZE], recv[BUFF_SIZE];
-		// ネットワーク接続
 		char str[300];
+		double th_h[2] = {280.0, 351.0};
+		double th_s[2] = {0.55, 1.0};
+		double th_v[2] = {0.0, 1.0};
+		// ネットワーク接続
 		sprintf(str, "%sに接続します", HOST_NAME);
 		mySpeak(str);
 		int sock = OpenNetwork();						// ソケットのハンドル取得
 		if(sock < 0){
-			mySpeak("ネットワークの接続に失敗しました");
+			sprintf(str, "%sの接続に失敗しました", HOST_NAME);
+			mySpeak(str);
 			return;
 		}
-		mySpeak("ネットワークに接続しました");
-		mySpeak( "今からしばらく写真を撮ります" );
-		IplImage* img = NULL;
+		sprintf(str, "%sに接続しました", HOST_NAME);
+		mySpeak(str);
+		mySpeak( "ボールを探してみます" );
 		while(1){
+			IplImage* img = NULL;
 			TakePic( img );
 			average = CalcAveBrightness(img);
-			sprintf(buf, "%.3lf\n", average);
-			write(sock, buf, sizeof(buf));
-			read(sock, recv, BUFF_SIZE);
-			if(strcmp(buf, recv) != 0) {
-				mySpeak("サーバとの通信がおかしいようです");
-				break;
-			}
-			if(average < 0.3)
-				break;
+			detectObject(img, th_h, th_s, th_v);
+			cvSaveImage( BMP_FILE_NAME, img );					// 撮った写真をBMPファイルとして保存
+			cvReleaseImage( &img );
+			if(SendFile(sock, BMP_FILE_NAME, BUFF_SIZE) != 0) break;
+			if(average < 0.3) break;
 		}
-		mySpeak("プログラムを終了します");
-		cvReleaseImage( &img );
-
 		CloseNetwork( sock );
-		mySpeak("ネットワークとの接続を解除しました");
+		sprintf(str, "%sとの接続を解除しました", HOST_NAME);
+		mySpeak(str);
 	}
 };
 
