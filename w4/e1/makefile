@@ -1,5 +1,5 @@
 
-MOD_NAME = TakePhoto
+MOD_NAME = BrightnessCheck
 MOD_SRC  = $(MOD_NAME).cpp
 MOD_OBJ  = $(MOD_SRC:.cpp=.o)
 
