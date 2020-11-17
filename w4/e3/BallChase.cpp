@@ -388,7 +388,7 @@ public:
 		CloseNetwork( img_sock );
 		sprintf(str, "%sとの接続を解除しました", HOST_NAME);
 		mySpeak(str);
-		mySpeak("Thanks for getting in touch with me.")
+		mySpeak("Thanks for getting in touch with me.");
 	}
 };
 
