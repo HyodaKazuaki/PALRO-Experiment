@@ -59,7 +59,7 @@ int accept_and_echo()
 	
 	for(int i = 0;; i++){
 		sprintf(filename, "./%s_%d.bmp", BMP_FILE_NAME, i);
-		int bfd = open( BMP_FILE_NAME, O_WRONLY | O_CREAT, S_IREAD | S_IWRITE);				// 画像ファイルのハンドル取得
+		int bfd = open( filename, O_WRONLY | O_CREAT, S_IREAD | S_IWRITE);				// 画像ファイルのハンドル取得
 		if( bfd < 0 ){
 			perror( "bmp file open" );
 			return 1;
@@ -74,7 +74,6 @@ int accept_and_echo()
 				fputs("Failed to read file from network.\n", stderr);
 				return 1;
 			}
-			if(buf[0] == '\0') break;
 			if(write(bfd, buf, ret) < 0){
 				fputs("Failed to write file.\n", stderr);
 				return 1;
@@ -87,6 +86,7 @@ int accept_and_echo()
 		
 		close( bfd );
 		printf( "%ld B ファイル出力終了\n" , commlen * BUFSIZE / 1024);
+		if(buf[0] == '\0') break;
 		
 		// IplImage* img = cvLoadImage(filename, CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_ANYCOLOR );
 		// if(img == 0) return 1;
