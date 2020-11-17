@@ -341,7 +341,7 @@ public:
 		int posOfGrav[2] = {0, 0};
 		int prePosOfGrav[2] = {0, 0};
 		int yaw, pitch;
-		int move_time = 5;
+		int move_time = 10;
 		char buf[BUFF_SIZE], recv[BUFF_SIZE];
 		char str[300];
 		double th_h[2] = {280.0, 351.0};
