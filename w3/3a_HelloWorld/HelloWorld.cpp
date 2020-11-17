@@ -54,6 +54,7 @@ public:
 		// MoveNeck(60, -45, 45);
 		// MoveNeck(-60, 17, 90);
 		MoveNeck(0, 0, 10);
+		MoveNeck(50, 0, 10);
 	}
 };
 
