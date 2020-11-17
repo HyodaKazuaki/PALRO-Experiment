@@ -393,6 +393,10 @@ public:
 				} else if(y < 0) {
 					pos[1] += 5;
 				}
+				if(x < -60) x = -60;
+				if(x > 60) x = 60;
+				if(y < -45) y = -45;
+				if(y > 17) y = 17;
 				MoveNeck(pos[0], pos[1], move_time);
 			}
 			cvSaveImage( BMP_FILE_NAME, img );					// 撮った写真をBMPファイルとして保存
