@@ -384,14 +384,14 @@ public:
 				x = posOfGrav[0] - (img->width / 2.0);
 				y = posOfGrav[1] - (img->height / 2.0);
 				if(x > 0) {
-					pos[0] += -1;
+					pos[0] += -5;
 				}else if (x < 0) {
-					pos[0] += 1;
+					pos[0] += 5;
 				}
 				if(y > 0) {
-					pos[1] += -1;
+					pos[1] += -5;
 				} else if(y < 0) {
-					pos[1] += 1;
+					pos[1] += 5;
 				}
 				MoveNeck(pos[0], pos[1], move_time);
 			}
@@ -422,7 +422,6 @@ public:
 		sprintf(str, "%sとの接続を解除しました", HOST_NAME);
 		mySpeak(str);
 		#endif
-		mySpeak("Thanks for getting in touch with me.");
 	}
 };
 
