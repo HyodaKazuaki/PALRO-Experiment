@@ -172,11 +172,6 @@ private:
 	{
 		long res = 0;
 		double rgb[3], hsv[3];
-		bool invFlag = false;
-		
-		if( high < low ){
-			invFlag = true;
-		}
 		
 		CvPoint grav;
 		grav.x = 0;	grav.y = 0;
