@@ -29,32 +29,32 @@ private:
 // 引数：なし
 // 返り値：ソケットのディスクリプター
 ///////////////////////////////////////////////////////////////////////////
-int OpenNetwork( )
-{
-	int sock;									// ここから一般的なソケット処理
-	if(( sock = socket( AF_INET, SOCK_STREAM, 0 )) < 0 ){
-		perror( "sock" );
-		return -1;
-	}
+	int OpenNetwork( )
+	{
+		int sock;									// ここから一般的なソケット処理
+		if(( sock = socket( AF_INET, SOCK_STREAM, 0 )) < 0 ){
+			perror( "sock" );
+			return -1;
+		}
 
-	struct hostent *hp = gethostbyname( HOST_NAME );
-	if( hp == NULL ){
-		perror( "socket" );
-		return -1;
-	}
+		struct hostent *hp = gethostbyname( HOST_NAME );
+		if( hp == NULL ){
+			perror( "socket" );
+			return -1;
+		}
 
-	struct sockaddr_in addr;
-	memset( (void*)&addr, 0, sizeof( addr) );
-	memcpy( &addr.sin_addr, hp->h_addr, hp->h_length );
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons(PORT);
+		struct sockaddr_in addr;
+		memset( (void*)&addr, 0, sizeof( addr) );
+		memcpy( &addr.sin_addr, hp->h_addr, hp->h_length );
+		addr.sin_family = AF_INET;
+		addr.sin_port = htons(PORT);
 
-	if( connect( sock, (struct sockaddr *)&addr, sizeof( addr ) ) < 0 ){
-		perror( "connect" );
-		return -1;
+		if( connect( sock, (struct sockaddr *)&addr, sizeof( addr ) ) < 0 ){
+			perror( "connect" );
+			return -1;
+		}
+		return sock;
 	}
-	return sock;
-}
 
 	void detectObject(IplImage* img, double *th_h, double *th_s, double *th_v) {
 		int x, y;
@@ -100,17 +100,17 @@ int OpenNetwork( )
 		return ave;
 	}
 
-///////////////////////////////////////////////////////////////////////////
-// ネットワーク終了処理
-// 引数：ソケットディスクリプター
-// 返り値：正常終了0、異常終了-1
-///////////////////////////////////////////////////////////////////////////
-int CloseNetwork( int sock )
-{
-	close( sock );
+	///////////////////////////////////////////////////////////////////////////
+	// ネットワーク終了処理
+	// 引数：ソケットディスクリプター
+	// 返り値：正常終了0、異常終了-1
+	///////////////////////////////////////////////////////////////////////////
+	int CloseNetwork( int sock )
+	{
+		close( sock );
 
-	return 0;
-}
+		return 0;
+	}
 public:
 ///////////////////////////////////////////////////////////////////////////
 // 発話関数
@@ -209,11 +209,11 @@ public:
 			IplImage* img = NULL;
 			TakePic( img );
 			average = CalcAveBrightness(img);
+			if(average < 0.3) break;
 			detectObject(img, th_h, th_s, th_v);
 			cvSaveImage( BMP_FILE_NAME, img );					// 撮った写真をBMPファイルとして保存
 			cvReleaseImage( &img );
 			if(SendFile(sock, BMP_FILE_NAME, BUFF_SIZE) != 0) break;
-			if(average < 0.3) break;
 		}
 		CloseNetwork( sock );
 		sprintf(str, "%sとの接続を解除しました", HOST_NAME);
