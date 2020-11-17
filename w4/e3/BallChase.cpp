@@ -402,7 +402,7 @@ public:
 			if(SendFile(img_sock, BMP_FILE_NAME, BUFF_SIZE) != 0) break;
 			#endif
 			#if ECHODEBUG
-			sprintf(buf, "yaw: %d, pitch: %d\n", yaw, pitch);
+			sprintf(buf, "x: %d, y: %d\n", pos[0], pos[1]);
 			write(echo_sock, buf, sizeof(buf));
 			read(echo_sock, recv, BUFF_SIZE);
 			if(strcmp(buf, recv) != 0) {
