@@ -51,8 +51,9 @@ public:
 	void OnProcessMain(Sapie::CControllerBase* pSender)
 	{
 		mySpeak( "こんにちは" );
-		MoveNeck(60, -45, 45);
-		MoveNeck(-60, 17, 90);
+		// MoveNeck(60, -45, 45);
+		// MoveNeck(-60, 17, 90);
+		MoveNeck(0, 0, 10);
 	}
 };
 
