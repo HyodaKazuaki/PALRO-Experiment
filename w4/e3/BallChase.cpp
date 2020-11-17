@@ -344,7 +344,7 @@ public:
 		double average;
 		long count;
 		int posOfGrav[2] = {0, 0};
-		int pos[2] = {(-45 + 17) / 2.0, 0};
+		int pos[2] = {0, 0};
 		int x, y;
 		int move_time = 10;
 		char buf[BUFF_SIZE], recv[BUFF_SIZE];
