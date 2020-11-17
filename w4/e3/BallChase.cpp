@@ -358,10 +358,10 @@ public:
 		sprintf(str, "%sに接続します", HOST_NAME);
 		mySpeak(str);
 		#if ECHODEBUG
-		int echo_sock = OpenNetwork(ECHO_PORT);						// ソケットのハンドル取得
+		echo_sock = OpenNetwork(ECHO_PORT);						// ソケットのハンドル取得
 		#endif
 		#if IMGDEBUG
-		int img_sock = OpenNetwork(IMGPORT);						// ソケットのハンドル取得
+		img_sock = OpenNetwork(IMGPORT);						// ソケットのハンドル取得
 		#endif
 		if(echo_sock < 0 or img_sock < 0){
 			sprintf(str, "%sの接続に失敗しました", HOST_NAME);
