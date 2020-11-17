@@ -266,7 +266,6 @@ public:
 				mySpeak("写真を送信できませんでした");
 				return -1;
 			}
-			bmpSize += ret;
 		}while(ret != 0);
 		close( bfd );									// ビットマップファイルのクローズ
 		return 0;
