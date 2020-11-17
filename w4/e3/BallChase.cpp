@@ -349,14 +349,14 @@ public:
 		// ネットワーク接続
 		sprintf(str, "%sに接続します", HOST_NAME);
 		mySpeak(str);
-		int sock = OpenNetwork();						// ソケットのハンドル取得
-		if(sock < 0){
-			sprintf(str, "%sの接続に失敗しました", HOST_NAME);
-			mySpeak(str);
-			return;
-		}
-		sprintf(str, "%sに接続しました", HOST_NAME);
-		mySpeak(str);
+		// int sock = OpenNetwork();						// ソケットのハンドル取得
+		// if(sock < 0){
+		// 	sprintf(str, "%sの接続に失敗しました", HOST_NAME);
+		// 	mySpeak(str);
+		// 	return;
+		// }
+		// sprintf(str, "%sに接続しました", HOST_NAME);
+		// mySpeak(str);
 		mySpeak( "ボールを探してみます" );
 		while(1){
 			IplImage* img = NULL;
@@ -375,7 +375,7 @@ public:
 			cvReleaseImage( &img );
 			// if(SendFile(sock, BMP_FILE_NAME, BUFF_SIZE) != 0) break;
 		}
-		CloseNetwork( sock );
+		// CloseNetwork( sock );
 		sprintf(str, "%sとの接続を解除しました", HOST_NAME);
 		mySpeak(str);
 	}
