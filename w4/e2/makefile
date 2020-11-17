@@ -1,5 +1,5 @@
 
-MOD_NAME = TakePhoto
+MOD_NAME = BallDetect
 MOD_SRC  = $(MOD_NAME).cpp
 MOD_OBJ  = $(MOD_SRC:.cpp=.o)
 
