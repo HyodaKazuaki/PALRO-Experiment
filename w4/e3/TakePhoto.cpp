@@ -24,6 +24,95 @@ class CTakePhoto : public PAPI::CTransientApplication
 {
 private:
 	const Sapie::CEventInfo *pEventInfo;
+	///////////////////////////////////////////////////////////////////////////
+	// HSV表色系からHSV表色系への変換
+	// 引数：	HSV(H:0~360, S,V:0~1)の入ったdouble配列
+	//			RGB(R, G, B:0~1)を格納するdouble配列
+	// 返り値：なし
+	///////////////////////////////////////////////////////////////////////////
+	void HSVtoRGB( double pre[3], double post[3] )
+	{
+		double h = pre[0];
+		double s = pre[1];
+		double v = pre[2];
+		int Hi = (int)(h / 60) % 6;
+		double f = h / 60.0 - Hi;
+		double p = v * (1.0 - s);
+		double q = v * (1 - f * s);
+		double t = v * (1.0 - (1.0 - f) * s);
+		switch (Hi)
+		{
+		case 0:
+			post[0] = v;
+			post[1] = t;
+			post[2] = p;
+			break;
+		case 1:
+			post[0] = q;
+			post[1] = v;
+			post[2] = p;
+			break;
+		case 2:
+			post[0] = p;
+			post[1] = v;
+			post[2] = t;
+			break;
+		case 3:
+			post[0] = p;
+			post[1] = q;
+			post[2] = v;
+			break;
+		case 4:
+			post[0] = t;
+			post[1] = p;
+			post[2] = v;
+			break;
+		case 5:
+			post[0] = v;
+			post[1] = p;
+			post[2] = q;
+			break;
+		default:
+			break;
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////
+	// HSV表色系からHSV表色系への変換
+	// 引数：	RGB(R, G, B:0~1)を格納するdouble配列
+	//			HSV(H:0~360, S,V:0~1)の入ったdouble配列
+	// 返り値：なし
+	///////////////////////////////////////////////////////////////////////////
+	void RGBtoHSV( double pre[3], double post[3] )
+	{
+		double h, s, v;
+		double r = pre[0];
+		double g = pre[1];
+		double b = pre[2];
+
+		double max = r;
+		double min = r;
+		int i;
+		for (i = 0; i < 3; i++){
+			if(max < pre[i])
+				max = pre[i];
+			if(min > pre[i])
+				min = pre[i];
+		}
+		if(max == r)
+			h = 60.0 * ((g - b) / (max - min));
+		else if(max == g)
+			h = 60.0 * ((b - r) / (max - min)) + 120.0;
+		else
+			h = 60.0 * ((r - g) / (max - min)) + 240.0;
+		if (h < 0)
+			h += 360.0;
+		s = (max - min) / max;
+		v = max;
+		post[0] = h;
+		post[1] = s;
+		post[2] = v;
+	}
 	long MoveNeck(int yaw, int pitch, int msec)
 	{
 		if(yaw < -60 || yaw > 60 || pitch < -45 || pitch > 17 || msec < 10)
@@ -241,7 +330,6 @@ public:
 				mySpeak("写真を送信できませんでした");
 				return -1;
 			}
-			bmpSize += ret;
 		}while(ret != 0);
 		close( bfd );									// ビットマップファイルのクローズ
 		return 0;
@@ -290,7 +378,7 @@ public:
 			}
 			cvSaveImage( BMP_FILE_NAME, img );					// 撮った写真をBMPファイルとして保存
 			cvReleaseImage( &img );
-			if(SendFile(sock, BMP_FILE_NAME, BUFF_SIZE) != 0) break;
+			// if(SendFile(sock, BMP_FILE_NAME, BUFF_SIZE) != 0) break;
 		}
 		CloseNetwork( sock );
 		sprintf(str, "%sとの接続を解除しました", HOST_NAME);
