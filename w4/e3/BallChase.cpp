@@ -344,8 +344,8 @@ public:
 		double average;
 		long count;
 		int posOfGrav[2] = {0, 0};
-		int prePosOfGrav[2] = {0, 0};
-		int yaw, pitch;
+		int pos[2] = {0, 0};
+		int x, y;
 		int move_time = 10;
 		char buf[BUFF_SIZE], recv[BUFF_SIZE];
 		char str[300];
@@ -381,9 +381,19 @@ public:
 			count = DrawAndCalcCenterOfGravity(img, posOfGrav, 0.0, 1.0);
 			if(count > 0) {
 				// 追跡
-				yaw = -(posOfGrav[0] - (int)(img->width / 2.0));
-				pitch = img->height - posOfGrav[1];
-				MoveNeck(yaw, pitch, move_time);
+				x = posOfGrav[0] - (img->width / 2.0);
+				y = posOfGrav[1] - (img->height / 2.0);
+				if(x > 0) {
+					pos[0] += -1;
+				}else if (x < 0) {
+					pos[0] += 1;
+				}
+				if(y > 0) {
+					pos[1] += -1;
+				} else if(y < 0) {
+					pos[1] += 1;
+				}
+				MoveNeck(pos[0], pos[1], move_time);
 			}
 			cvSaveImage( BMP_FILE_NAME, img );					// 撮った写真をBMPファイルとして保存
 			cvReleaseImage( &img );
