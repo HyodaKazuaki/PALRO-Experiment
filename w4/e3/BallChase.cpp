@@ -20,10 +20,10 @@
 #define ECHO_PORT 54321						// ポート番号
 #define IMGPORT 54322
 #define HOST_NAME "192.168.11.57"			// サーバ名
-#define NETDEBUG 1
+#define NETDEBUG 0
 #if NETDEBUG
 #define IMGDEBUG 0
-#define ECHODEBUG 1
+#define ECHODEBUG 0
 #endif
 
 class CTakePhoto : public PAPI::CTransientApplication
