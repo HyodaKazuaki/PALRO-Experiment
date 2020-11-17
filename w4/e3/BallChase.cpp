@@ -384,14 +384,14 @@ public:
 				x = posOfGrav[0] - (img->width / 2.0);
 				y = posOfGrav[1] - (img->height / 2.0);
 				if(x > 0) {
-					pos[0] += -10;
+					pos[0] += -3;
 				}else if (x < 0) {
-					pos[0] += 10;
+					pos[0] += 3;
 				}
 				if(y > 0) {
-					pos[1] += -10;
+					pos[1] += -3;
 				} else if(y < 0) {
-					pos[1] += 10;
+					pos[1] += 3;
 				}
 				if(x < -60) x = -60;
 				if(x > 60) x = 60;
