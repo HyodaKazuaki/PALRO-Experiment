@@ -20,8 +20,8 @@
 #endif
 
 #define BUFSIZE 1024						// バッファサイズ
-#define PORT 54321							// ポート番号
-#define BMP_FILE_NAME "./COMM.bmp"			// 保存ファイル名
+#define PORT 54322							// ポート番号
+#define BMP_FILE_NAME "COMM"			// 保存ファイル名
 
 int sock = -1;
 int fd = -1;
@@ -47,6 +47,7 @@ int accept_and_echo()
 	int ret, wsize;
 	socklen_t len;
 	char buf[BUFSIZE];
+	char filename[100];
 
 	len = sizeof( caddr );
 	fd = accept( sock, (struct sockaddr *)&caddr, &len );	// サーバソケットのハンドル取得
@@ -56,34 +57,48 @@ int accept_and_echo()
 		return 1;
 	}
 	
-	int bfd = open( BMP_FILE_NAME, O_WRONLY | O_CREAT, S_IREAD | S_IWRITE);				// 画像ファイルのハンドル取得
-	if( bfd < 0 ){
-		perror( "bmp file open" );
-		return 1;
+	for(int i = 0;; i++){
+		sprintf(filename, "./%s_%d.bmp", BMP_FILE_NAME, i);
+		int bfd = open( BMP_FILE_NAME, O_WRONLY | O_CREAT, S_IREAD | S_IWRITE);				// 画像ファイルのハンドル取得
+		if( bfd < 0 ){
+			perror( "bmp file open" );
+			return 1;
+		}
+		
+		long commlen = 0;
+		
+		/* ここに受信処理を記述 */
+		do{
+			ret = read(fd, buf, BUFSIZE);
+			if(ret < 0){
+				fputs("Failed to read file from network.\n", stderr);
+				return 1;
+			}
+			if(buf[0] == '\0') break;
+			if(write(bfd, buf, ret) < 0){
+				fputs("Failed to write file.\n", stderr);
+				return 1;
+			}
+			commlen += ret;
+			printf("\rTotal: %ld B(%d B Recieved)", commlen, ret);
+		}while(ret != 0);
+		fsync(bfd);
+		printf("\n");
+		
+		close( bfd );
+		printf( "%ld B ファイル出力終了\n" , commlen * BUFSIZE / 1024);
+		
+		// IplImage* img = cvLoadImage(filename, CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_ANYCOLOR );
+		// if(img == 0) return 1;
+		// cvNamedWindow("Uploaded Image", CV_WINDOW_AUTOSIZE);
+		// cvShowImage("Uploaded Image", img);
+		// cvWaitKey(0);
+		// cvDestroyWindow("Uploaded Image");
+		// cvReleaseImage(&img);
 	}
-	
-	long commlen = 0;
-	
-	/* ここに受信処理を記述 */
-	do{
-		ret = read(fd, buf, BUFSIZE);
-		if(ret < 0){
-			fputs("Failed to read file from network.\n", stderr);
-			return 1;
-		}
-		if(write(bfd, buf, ret) < 0){
-			fputs("Failed to write file.\n", stderr);
-			return 1;
-		}
-		commlen += ret;
-		printf("\rTotal: %ld B(%d B Recieved)", commlen, ret);
-	}while(ret != 0);
-	fsync(bfd);
-	printf("\n");
-	
+
 	close( fd );
-	close( bfd );
-	printf( "%ld B ファイル出力終了\n" , commlen * BUFSIZE / 1024);
+
 	return 0;
 }
 
@@ -124,17 +139,8 @@ int main( void )
 		exit( 1 );
 	}
 
-	// while( 1 ){
-		if(!accept_and_echo()){
-			IplImage* img = cvLoadImage(BMP_FILE_NAME, CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_ANYCOLOR );
-			if(img == 0) return 1;
-			cvNamedWindow("Uploaded Image", CV_WINDOW_AUTOSIZE);
-			cvShowImage("Uploaded Image", img);
-			cvWaitKey(0);
-			cvDestroyWindow("Uploaded Image");
-			cvReleaseImage(&img);
-		}
-	// }
+	if(!accept_and_echo()){
+	}
 
 	return 0;
 }
