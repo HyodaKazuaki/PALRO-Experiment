@@ -353,6 +353,7 @@ public:
 		double th_s[2] = {0.55, 1.0};
 		double th_v[2] = {0.0, 1.0};
 		int echo_sock = 0, img_sock = 0;
+		IplImage* img = NULL;
 		#if NETDEBUG
 		// ネットワーク接続
 		sprintf(str, "%sに接続します", HOST_NAME);
@@ -374,7 +375,6 @@ public:
 		mySpeak( "ボールを探してみます" );
 		MoveNeck(pos[0], pos[1], move_time);
 		while(1){
-			IplImage* img = NULL;
 			TakePic( img );
 			average = CalcAveBrightness(img);
 			if(average < 0.3) break;
