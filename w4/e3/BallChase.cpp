@@ -369,8 +369,8 @@ public:
 			count = DrawAndCalcCenterOfGravity(img, posOfGrav, 0.0, 1.0);
 			if(count > 0) {
 				// 追跡
-				yaw = posOfGrav[0] - (int)(img->width / 2.0);
-				pitch = posOfGrav[1] - (int)(img->height / 2.0);
+				yaw = img->width - (posOfGrav[0] - (int)(img->width / 2.0));
+				pitch = img->height - (posOfGrav[1] - (int)(img->height / 2.0));
 				MoveNeck(yaw, pitch, move_time);
 			}
 			cvSaveImage( BMP_FILE_NAME, img );					// 撮った写真をBMPファイルとして保存
