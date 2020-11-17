@@ -17,7 +17,7 @@
 
 #define BMP_FILE_NAME "tmp.bmp"			// 一時保存ファイル名
 #define BUFF_SIZE 1024					// バッファサイズ
-#define PORT 54321						// ポート番号
+#define PORT 54322						// ポート番号
 #define HOST_NAME "192.168.11.57"			// サーバ名
 
 class CTakePhoto : public PAPI::CTransientApplication

@@ -17,7 +17,8 @@
 
 #define BMP_FILE_NAME "tmp.bmp"			// 一時保存ファイル名
 #define BUFF_SIZE 1024					// バッファサイズ
-#define PORT 54321						// ポート番号
+#define ECHO_PORT 54321						// ポート番号
+#define IMGPORT 54322
 #define HOST_NAME "192.168.11.57"			// サーバ名
 
 class CTakePhoto : public PAPI::CTransientApplication
@@ -133,7 +134,7 @@ private:
 	// 引数：なし
 	// 返り値：ソケットのディスクリプター
 	///////////////////////////////////////////////////////////////////////////
-	int OpenNetwork( )
+	int OpenNetwork(int port)
 	{
 		int sock;									// ここから一般的なソケット処理
 		if(( sock = socket( AF_INET, SOCK_STREAM, 0 )) < 0 ){
@@ -151,7 +152,7 @@ private:
 		memset( (void*)&addr, 0, sizeof( addr) );
 		memcpy( &addr.sin_addr, hp->h_addr, hp->h_length );
 		addr.sin_family = AF_INET;
-		addr.sin_port = htons(PORT);
+		addr.sin_port = htons(port);
 
 		if( connect( sock, (struct sockaddr *)&addr, sizeof( addr ) ) < 0 ){
 			perror( "connect" );
@@ -349,14 +350,15 @@ public:
 		// ネットワーク接続
 		sprintf(str, "%sに接続します", HOST_NAME);
 		mySpeak(str);
-		// int sock = OpenNetwork();						// ソケットのハンドル取得
-		// if(sock < 0){
-		// 	sprintf(str, "%sの接続に失敗しました", HOST_NAME);
-		// 	mySpeak(str);
-		// 	return;
-		// }
-		// sprintf(str, "%sに接続しました", HOST_NAME);
-		// mySpeak(str);
+		int echo_sock = OpenNetwork(ECHO_PORT);						// ソケットのハンドル取得
+		int img_sock = OpenNetwork(IMGPORT);						// ソケットのハンドル取得
+		if(echo_sock < 0 or img_sock < 0){
+			sprintf(str, "%sの接続に失敗しました", HOST_NAME);
+			mySpeak(str);
+			return;
+		}
+		sprintf(str, "%sに接続しました", HOST_NAME);
+		mySpeak(str);
 		mySpeak( "ボールを探してみます" );
 		while(1){
 			IplImage* img = NULL;
@@ -373,11 +375,20 @@ public:
 			}
 			cvSaveImage( BMP_FILE_NAME, img );					// 撮った写真をBMPファイルとして保存
 			cvReleaseImage( &img );
-			// if(SendFile(sock, BMP_FILE_NAME, BUFF_SIZE) != 0) break;
+			if(SendFile(sock, BMP_FILE_NAME, BUFF_SIZE) != 0) break;
+			sprintf(buf, "yaw: %d, pitch: %d\n", yaw, pitch);
+			write(sock, buf, sizeof(buf));
+			read(sock, recv, BUFF_SIZE);
+			if(strcmp(buf, recv) != 0) {
+				mySpeak("サーバとの通信がおかしいようです");
+				break;
+			}
 		}
-		// CloseNetwork( sock );
+		CloseNetwork( echo_sock );
+		CloseNetwork( img_sock );
 		sprintf(str, "%sとの接続を解除しました", HOST_NAME);
 		mySpeak(str);
+		mySpeak("Thanks for getting in touch with me.")
 	}
 };
 
