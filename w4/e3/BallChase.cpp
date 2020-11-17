@@ -375,10 +375,10 @@ public:
 			}
 			cvSaveImage( BMP_FILE_NAME, img );					// 撮った写真をBMPファイルとして保存
 			cvReleaseImage( &img );
-			if(SendFile(sock, BMP_FILE_NAME, BUFF_SIZE) != 0) break;
+			if(SendFile(img_sock, BMP_FILE_NAME, BUFF_SIZE) != 0) break;
 			sprintf(buf, "yaw: %d, pitch: %d\n", yaw, pitch);
-			write(sock, buf, sizeof(buf));
-			read(sock, recv, BUFF_SIZE);
+			write(echo_sock, buf, sizeof(buf));
+			read(echo_sock, recv, BUFF_SIZE);
 			if(strcmp(buf, recv) != 0) {
 				mySpeak("サーバとの通信がおかしいようです");
 				break;
