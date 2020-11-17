@@ -344,7 +344,7 @@ public:
 		double average;
 		long count;
 		int posOfGrav[2] = {0, 0};
-		int pos[2] = {(-45 + 17) / 2, 0};
+		int pos[2] = {(-45 + 17) / 2.0, 0};
 		int x, y;
 		int move_time = 10;
 		char buf[BUFF_SIZE], recv[BUFF_SIZE];
@@ -372,6 +372,7 @@ public:
 		mySpeak(str);
 		#endif
 		mySpeak( "ボールを探してみます" );
+		MoveNeck(pos[0], pos[1], move_time);
 		while(1){
 			IplImage* img = NULL;
 			TakePic( img );
@@ -399,10 +400,9 @@ public:
 				if(y > 17) y = 17;
 				MoveNeck(pos[0], pos[1], move_time);
 			}
-			cvSaveImage( BMP_FILE_NAME, img );					// 撮った写真をBMPファイルとして保存
-			cvReleaseImage( &img );
 			#if NETDEBUG
 			#if IMGDEBUG
+			cvSaveImage( BMP_FILE_NAME, img );					// 撮った写真をBMPファイルとして保存
 			if(SendFile(img_sock, BMP_FILE_NAME, BUFF_SIZE) != 0) break;
 			#endif
 			#if ECHODEBUG
@@ -416,6 +416,7 @@ public:
 			#endif
 			#endif
 		}
+		cvReleaseImage( &img );
 		#if NETDEBUG
 		#if ECHODEBUG
 		CloseNetwork( echo_sock );
