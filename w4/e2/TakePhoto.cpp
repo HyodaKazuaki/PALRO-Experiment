@@ -302,7 +302,8 @@ public:
 			detectObject(img, th_h, th_s, th_v);
 			cvSaveImage( BMP_FILE_NAME, img );					// 撮った写真をBMPファイルとして保存
 			cvReleaseImage( &img );
-			if(SendFile(sock, BMP_FILE_NAME, BUFF_SIZE) != 0) break;
+			SendFile(sock, BMP_FILE_NAME, BUFF_SIZE);
+			break;
 		}
 		CloseNetwork( sock );
 		sprintf(str, "%sとの接続を解除しました", HOST_NAME);
