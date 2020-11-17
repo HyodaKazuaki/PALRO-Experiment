@@ -20,6 +20,7 @@
 #define ECHO_PORT 54321						// ポート番号
 #define IMGPORT 54322
 #define HOST_NAME "192.168.11.57"			// サーバ名
+#define NETDEBUG 0
 
 class CTakePhoto : public PAPI::CTransientApplication
 {
@@ -347,6 +348,7 @@ public:
 		double th_h[2] = {280.0, 351.0};
 		double th_s[2] = {0.55, 1.0};
 		double th_v[2] = {0.0, 1.0};
+		#if NETDEBUG
 		// ネットワーク接続
 		sprintf(str, "%sに接続します", HOST_NAME);
 		mySpeak(str);
@@ -359,6 +361,7 @@ public:
 		}
 		sprintf(str, "%sに接続しました", HOST_NAME);
 		mySpeak(str);
+		#endif
 		mySpeak( "ボールを探してみます" );
 		while(1){
 			IplImage* img = NULL;
@@ -375,6 +378,7 @@ public:
 			}
 			cvSaveImage( BMP_FILE_NAME, img );					// 撮った写真をBMPファイルとして保存
 			cvReleaseImage( &img );
+			#if NETDEBUG
 			if(SendFile(img_sock, BMP_FILE_NAME, BUFF_SIZE) != 0) break;
 			sprintf(buf, "yaw: %d, pitch: %d\n", yaw, pitch);
 			write(echo_sock, buf, sizeof(buf));
@@ -383,11 +387,14 @@ public:
 				mySpeak("サーバとの通信がおかしいようです");
 				break;
 			}
+			#endif
 		}
+		#if NETDEBUG
 		CloseNetwork( echo_sock );
 		CloseNetwork( img_sock );
 		sprintf(str, "%sとの接続を解除しました", HOST_NAME);
 		mySpeak(str);
+		#endif
 		mySpeak("Thanks for getting in touch with me.");
 	}
 };
